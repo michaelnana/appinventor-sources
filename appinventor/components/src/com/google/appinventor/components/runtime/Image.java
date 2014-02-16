@@ -5,6 +5,17 @@
 
 package com.google.appinventor.components.runtime;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+
+import android.graphics.drawable.Drawable;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -18,13 +29,6 @@ import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
-import android.graphics.drawable.Drawable;
-import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
-
-import java.io.IOException;
-
 /**
  * Component for displaying images and animations.
  *
@@ -36,11 +40,16 @@ import java.io.IOException;
     "Designer or in the Blocks Editor.")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
-public final class Image extends AndroidViewComponent {
+public final class Image extends AndroidViewComponent implements Serializable{
 
   private final ImageView view;
 
   private String picturePath = "";  // Picture property
+  private static Drawable drawable;  // Picture property
+  static ArrayList<Drawable> draw=new ArrayList<Drawable>();
+  static String thePath;
+  static int pos=-1;
+  int tPos;
 
   /**
    * Creates a new Image component.
@@ -78,6 +87,24 @@ public final class Image extends AndroidViewComponent {
   public String Picture() {
     return picturePath;
   }
+  
+
+  /**
+  *Returns the position of the image in the ArrayList to 
+  *be called in the ArrayList on the listpicker
+  */
+  @SimpleProperty
+  public String imageForList() {
+    return Integer.toString(tPos);
+  }
+  
+  /**
+  * Returns a staic ArrayList containing all the drawables of created images
+  */
+  public static ArrayList<Drawable> ourImage() {
+
+	    return draw;
+	  }
 
   /**
    * Specifies the path of the image's picture.
@@ -92,10 +119,13 @@ public final class Image extends AndroidViewComponent {
   @SimpleProperty
   public void Picture(String path) {
     picturePath = (path == null) ? "" : path;
-
-    Drawable drawable;
+    thePath=path;
+    //Drawable drawable;
     try {
       drawable = MediaUtil.getBitmapDrawable(container.$form(), picturePath);
+      draw.add(drawable);
+      pos++;
+      tPos=pos;
     } catch (IOException ioe) {
       Log.e("Image", "Unable to load " + picturePath);
       drawable = null;
@@ -123,4 +153,6 @@ public final class Image extends AndroidViewComponent {
   public void Animation(String animation) {
     AnimationUtil.ApplyAnimation(view, animation);
   }
+
+
 }

@@ -7,22 +7,25 @@ package com.google.appinventor.components.runtime;
 
 
 
-import android.view.KeyEvent;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import com.google.appinventor.components.runtime.util.AnimationUtil;
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+
+import com.google.appinventor.components.runtime.util.AnimationUtil;
 
 /**
  * ListPickerActivity class - Brings up a list of items specified in an intent
@@ -35,12 +38,17 @@ public class ListPickerActivity extends Activity implements AdapterView.OnItemCl
 
   private String closeAnim = "";
   private ListView listView;
+  String items[];
+  String subItems[];
+  String images[];
+  Image i;
 
   // Listview Adapter
-  ArrayAdapter<String> adapter;
+  CustomAdapter adapter;
 
   // Search EditText
   EditText txtSearchBox;
+  ImageView image;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -58,13 +66,24 @@ public class ListPickerActivity extends Activity implements AdapterView.OnItemCl
       setTitle(title);
     }
     if (myIntent.hasExtra(ListPicker.LIST_ACTIVITY_ARG_NAME)) {
-      String items[] = getIntent().getStringArrayExtra(ListPicker.LIST_ACTIVITY_ARG_NAME);
+      items = getIntent().getStringArrayExtra(ListPicker.LIST_ACTIVITY_ARG_NAME);
+      subItems=getIntent().getStringArrayExtra(ListPicker.LIST_ACTIVITY_ARG_SUB_NAME);
+      images= getIntent().getStringArrayExtra(ListPicker.LIST_ACTIVITY_ARG_IMG_NAME);
+     
       listView = new ListView(this);
       listView.setOnItemClickListener(this);
 
       // Adding items to listview
-      adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
+      //adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_2, items); //Changes
+      
+      adapter = new CustomAdapter(this, items, subItems, images);
+      //adapter = new CustomAdapter(this, items, subItems, i);
+      
+
+      
+      
       listView.setAdapter(adapter);
+
       String showFilterBar =myIntent.getStringExtra(ListPicker.LIST_ACTIVITY_SHOW_SEARCH_BAR);
 
       // Determine if we should even show the search bar
@@ -84,7 +103,7 @@ public class ListPickerActivity extends Activity implements AdapterView.OnItemCl
         @Override
         public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
           // When user changed the Text
-          ListPickerActivity.this.adapter.getFilter().filter(cs);
+          //TODO ListPickerActivity.this.adapter.getFilter().filter(cs);
         }
 
         @Override
