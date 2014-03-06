@@ -69,6 +69,7 @@ public class ListPickerActivity extends Activity implements AdapterView.OnItemCl
       items = getIntent().getStringArrayExtra(ListPicker.LIST_ACTIVITY_ARG_NAME);
       subItems=getIntent().getStringArrayExtra(ListPicker.LIST_ACTIVITY_ARG_SUB_NAME);
       images= getIntent().getStringArrayExtra(ListPicker.LIST_ACTIVITY_ARG_IMG_NAME);
+      //i=(Image)getIntent().getSerializableExtra(ListPicker.LIST_ACTIVITY_ARG_I_NAME);
      
       listView = new ListView(this);
       listView.setOnItemClickListener(this);

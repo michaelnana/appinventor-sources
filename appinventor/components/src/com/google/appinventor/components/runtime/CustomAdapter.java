@@ -98,23 +98,38 @@ public class CustomAdapter extends BaseAdapter {
 		ImageView im1 = new ImageView(activity);
 		
 		if(items.length!=0){
+			if(items[position].startsWith("http")){
+				im1.setImageBitmap(getBitmapFromURL(items[position]));
+				ll.addView(im1);
+				return ll;
+			}
+			else{
 			t1.setText(items[position]);
 			//t1.setLayoutParams(layoutParams);
 			t1.setTextSize(25);
 			t1.setTextColor(Color.parseColor("#FFFFFF"));
 			ll.addView(t1);
+			}
 		}
 
 		if(subitems.length!=0){
+			if(subitems[position].startsWith("http")){
+				im1.setImageBitmap(getBitmapFromURL(subitems[position]));
+				ll.addView(im1);
+				return ll;
+			}
+			else{
 			t2.setText(subitems[position]);
 			t2.setTextColor(Color.parseColor("#FFFFFF"));
 			ll.addView(t2);
+			}
 		}
 
 		if(images.length!=0){
 			if(images[position].startsWith("http"))
 				im1.setImageBitmap(getBitmapFromURL(images[position]));
 			else
+				//im1.setImageDrawable(Image.getImage().drawable);
 				im1.setImageDrawable(Image.ourImage().get(Integer.parseInt(images[position]))); 
 
 			ll.addView(im1);

@@ -87,6 +87,16 @@ public final class Image extends AndroidViewComponent implements Serializable{
   public String Picture() {
     return picturePath;
   }
+
+  @SimpleProperty
+  public Image getImage(){
+    return this;
+  }
+
+  public String[] testArray(){
+   String[]arr={"Hello","Cheese","Cheddar"};
+    return arr;
+  }
   
 
   /**

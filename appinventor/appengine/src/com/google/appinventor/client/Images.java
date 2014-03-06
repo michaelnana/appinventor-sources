@@ -229,6 +229,13 @@ public interface Images extends Resources {
   @Source("com/google/appinventor/images/listPicker.png")
   ImageResource listpicker();
 
+    /**
+   * Designer palette item: ListView component
+   */
+  @Source("com/google/appinventor/images/listView.png")
+  ImageResource listview();
+
+
   /**
    * Designer palette item: PhoneCall component
    */
