@@ -87,7 +87,6 @@ public final class MockLabel extends MockVisibleComponent {
   private void setFontTypefaceProperty(String text) {
     MockComponentsUtil.setWidgetFontTypeface(labelWidget, text);
   }
-
   /*
    * Sets the label's Text property to a new value.
    */

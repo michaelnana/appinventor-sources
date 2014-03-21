@@ -98,10 +98,15 @@ public final class MockListView extends MockVisibleComponent {
   /*
    * Sets the label's Text property to a new value.
    */
-  private void setTextProperty(String text) {
-    //listBoxWidget.setText(text);
-    listBoxWidget.addItem(text);
+  private void setElementsFromStringProperty (String text){
+    String[] a=text.split(", ");
+    for(int i=0; i<a.length; i++){
+        listBoxWidget.addItem(a[i]);
+    }
+    listBoxWidget.setVisibleItemCount(a.length);
+    //RootPanel.get().add(listBoxWidget);
   }
+
 
   /*
    * Sets the label's TextColor property to a new value.
@@ -136,8 +141,8 @@ public final class MockListView extends MockVisibleComponent {
     } else if (propertyName.equals(PROPERTY_NAME_FONTTYPEFACE)) {
       setFontTypefaceProperty(newValue);
       refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_TEXT)) {
-      setTextProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_LIST)) {
+      setElementsFromStringProperty(newValue);
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
       setTextColorProperty(newValue);
