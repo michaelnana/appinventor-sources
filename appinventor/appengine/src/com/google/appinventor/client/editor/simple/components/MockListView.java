@@ -99,7 +99,8 @@ public final class MockListView extends MockVisibleComponent {
    * Sets the label's Text property to a new value.
    */
   private void setElementsFromStringProperty (String text){
-    String[] a=text.split(", ");
+    String[] a=text.split(",");
+    listBoxWidget.clear();
     for(int i=0; i<a.length; i++){
         listBoxWidget.addItem(a[i]);
     }

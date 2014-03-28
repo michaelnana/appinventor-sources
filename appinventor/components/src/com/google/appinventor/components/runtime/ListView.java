@@ -5,17 +5,22 @@ import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.YailList;
+import android.app.Activity;
+import android.content.Intent;
 
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.AdapterView;
 
 import java.util.*;
 
@@ -23,7 +28,7 @@ import java.util.*;
  * Sensor that can measure absolute orientation in 3 dimensions.
  *
  */
-@DesignerComponent(version = 1, //This should be a reference to YaVersion.java
+@DesignerComponent(version = YaVersion.LISTVIEW_COMPONENT_VERSION, //This should be a reference to YaVersion.java
     description = "<p>This is a visible component that allows you to place a list in your view display a list of strings that you decide to set<br>" +
         "You can set the list using ElementsFromString or you can use the Elements blocks in the blocks editor. </p>",
     category = ComponentCategory.USERINTERFACE,
@@ -31,8 +36,9 @@ import java.util.*;
     iconName = "images/listView.png")
 
 @SimpleObject
-public final class ListView extends AndroidViewComponent {
+public final class ListView extends AndroidViewComponent implements AdapterView.OnItemClickListener {
   private final android.widget.ListView view;
+  protected final ComponentContainer container;
   //private final LinearLayout lay;
 //private final android.widget.ListView listView;
   ArrayAdapter<String> adapter;
@@ -59,6 +65,14 @@ public final class ListView extends AndroidViewComponent {
   String[] items;
   ArrayList listItems;
   int index=0;
+  protected int requestCode;
+  String selection;
+  int selectionIndex;
+
+  private static final String LIST_ACTIVITY_CLASS = "ListView";
+  static final String LIST_ACTIVITY_ARG_NAME = LIST_ACTIVITY_CLASS + ".list";
+  static final String LIST_ACTIVITY_RESULT_INDEX = LIST_ACTIVITY_CLASS + ".index";
+  static final String LIST_ACTIVITY_RESULT_NAME = LIST_ACTIVITY_CLASS + ".selection";
 
   /**
    * Creates a new ListView component.
@@ -67,8 +81,10 @@ public final class ListView extends AndroidViewComponent {
    */
   public ListView(ComponentContainer container) {
     super(container);
+    this.container=container;
     view = new android.widget.ListView(container.$context());
     listItems=new ArrayList();
+    view.setOnItemClickListener(this);
 
     // Default property values
     //TextAlignment(Component.ALIGNMENT_NORMAL);
@@ -114,7 +130,7 @@ public final class ListView extends AndroidViewComponent {
   }*/
 
   @Override
-  @SimpleProperty()
+  @SimpleProperty(description = "Determines the height of the list on the view.", category =PropertyCategory.APPEARANCE)
   public void Height(int height) {
     if (height == LENGTH_PREFERRED) {
       height = LENGTH_FILL_PARENT;
@@ -123,7 +139,7 @@ public final class ListView extends AndroidViewComponent {
   }
 
   @Override
-  @SimpleProperty()
+  @SimpleProperty(description = "Determines the width of the list on the view.", category = PropertyCategory.APPEARANCE)
   public void Width(int width) {
     if (width == LENGTH_PREFERRED) {
       width = LENGTH_FILL_PARENT;
@@ -313,31 +329,78 @@ public final class ListView extends AndroidViewComponent {
    *
    * @param text  new caption for label
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-      defaultValue = "")
-  @SimpleProperty
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty(description="Build a list witha string of words separated by commas like this Cheese,Cheddar and "
+    +"each word before the comma will form a cell in your list.",  category = PropertyCategory.BEHAVIOR)
   public void ElementsFromString(String text) {
-    items=text.split(", ");
+    items=text.split(",");
     setList();
     //TextViewUtil.setText(view, text);
   }
 
-  @SimpleProperty
+  @SimpleProperty(description="Send a list of strings to build your list.",  category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList text) {
     items=text.toStringArray();
     setList();
     //TextViewUtil.setText(view, text);
   }
 
-  @SimpleProperty
+  @SimpleProperty(description="Choose a position to be your index. This could be used to retrieve "
+    +"the text at the position choosen in the list.",  category = PropertyCategory.BEHAVIOR)
   public void SelectionIndex(int i){
     index=i-1;
+    selection=items[index];
   }
 
-  @SimpleProperty
+  @SimpleProperty(description="Returns the text of your selection.",  category = PropertyCategory.BEHAVIOR)
   public String Selection(){
-      return items[index];
+      selection=items[index];
+      return selection;
   }
+
+  /**
+   * Simple event to raise when the component is clicked but before the
+   * picker activity is started.
+   */
+
+  @Override
+  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    //EventDispatcher.dispatchEvent(this, "AfterPicking");
+    index=position;
+    AfterPicking();
+  }
+
+
+  @SimpleEvent
+  public void BeforePicking() {
+    EventDispatcher.dispatchEvent(this, "BeforePicking");
+  }
+
+  /**
+   * Simple event to be raised after the picker activity returns its
+   * result and the properties have been filled in.
+   */
+  @SimpleEvent
+  public void AfterPicking() {
+    EventDispatcher.dispatchEvent(this, "AfterPicking");
+  }
+
+ /* @Override
+  public void resultReturned(int requestCode, int resultCode, Intent data) {
+    AfterPicking();
+    if (requestCode == this.requestCode && resultCode == Activity.RESULT_OK) {
+      if (data.hasExtra(LIST_ACTIVITY_RESULT_NAME)) {
+        selection = data.getStringExtra(LIST_ACTIVITY_RESULT_NAME);
+      } else {
+        selection = "";
+      }
+      selectionIndex = data.getIntExtra(LIST_ACTIVITY_RESULT_INDEX, 0);
+      
+    }
+  }*/
+
+
+  
 
   /**
    * Returns the label's text color as an alpha-red-green-blue
